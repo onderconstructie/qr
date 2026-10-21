@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR — Plak, scan, klaar</title>
+    <meta name="theme-color" content="#ffffff">
+  <title>QR Generator – Onder Constructie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- App favicon: hetzelfde logo als in de header -->
   <link rel="icon" type="image/svg+xml"
@@ -27,7 +31,7 @@
     *{ box-sizing:border-box; margin:0; padding:0; }
 
     body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      font-family:'DM Sans', system-ui, -apple-system, sans-serif;
       background:var(--slate-50);
       color:var(--slate-700);
       min-height:100vh;
@@ -104,7 +108,7 @@
     }
 
     .label{
-      font-size:.65rem;
+      font-size:0.6875rem;
       letter-spacing:.12em;
       text-transform:uppercase;
       color:var(--slate-400);
@@ -192,7 +196,26 @@
       color:var(--accent);
       font-weight:400;
     }
-  </style>
+  
+        /* Onder Constructie: gedeelde footer en quote (huisstijl) */
+        footer.oc-footer {
+            text-align: center;
+            padding: 2rem 1.5rem calc(env(safe-area-inset-bottom, 0px) + 2rem);
+            margin-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #10b981;
+        }
+
+        footer.oc-footer .oc-quote {
+            font-size: 0.8125rem;
+            line-height: 1.5;
+            color: #10b981;
+            opacity: 1;
+            font-style: normal;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 
@@ -270,9 +293,9 @@
   </div>
 </main>
 
-<footer>
-  Zie eerst wat er is. Pas daarna wat je denkt te zien.
-</footer>
+<footer class="footer oc-footer">
+        <p class="quote oc-quote">Zie eerst wat er is. Pas daarna wat je denkt te zien.</p>
+    </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script>
