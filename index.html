@@ -96,12 +96,14 @@
     }
 
     @media(max-width:900px){
-      .layout{ grid-template-columns:1fr; }
+      .layout{ grid-template-columns:minmax(0,1fr); }
+      main{ padding:1.25rem 1rem; }
       .back-link{ position:static; margin-bottom:.75rem; }
       header{ flex-direction:column; }
     }
 
     .card{
+      min-width:0;
       background:var(--white);
       border:1.5px solid var(--slate-200);
       border-radius:var(--radius);
