@@ -392,7 +392,7 @@
     const side = scale * total;
     const off = Math.floor((PRINT - side) / 2);
     const fontPx = 28;
-    const textH = Math.round(fontPx * 3);
+    const textH = Math.round(fontPx * 2.4);
     const c = document.createElement("canvas");
     c.width = PRINT;
     c.height = PRINT + textH;
@@ -415,7 +415,7 @@
       while (label.length > 1 && x.measureText(label + "…").width > maxW) label = label.slice(0, -1);
       label += "…";
     }
-    x.fillText(label, PRINT/2, PRINT + textH/2 - fontPx/2);
+    x.fillText(label, PRINT/2, PRINT + fontPx * 0.4);
     return c;
   }
 
