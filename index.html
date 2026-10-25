@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="/fonts/fonts.css">
 
   <!-- App favicon: hetzelfde logo als in de header -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E %3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;16&quot; fill=&quot;%23f0fdf4&quot; stroke=&quot;%2310b981&quot; stroke-width=&quot;2&quot;/%3E %3Cg fill=&quot;%2310b981&quot;%3E %3Crect x=&quot;12&quot; y=&quot;12&quot; width=&quot;7&quot; height=&quot;7&quot; rx=&quot;1.4&quot;/%3E %3Crect x=&quot;21&quot; y=&quot;12&quot; width=&quot;7&quot; height=&quot;7&quot; rx=&quot;1.4&quot;/%3E %3Crect x=&quot;12&quot; y=&quot;21&quot; width=&quot;7&quot; height=&quot;7&quot; rx=&quot;1.4&quot;/%3E %3Crect x=&quot;21&quot; y=&quot;21&quot; width=&quot;2.4&quot; height=&quot;2.4&quot; rx=&quot;.4&quot;/%3E %3Crect x=&quot;24.4&quot; y=&quot;21&quot; width=&quot;2.4&quot; height=&quot;2.4&quot; rx=&quot;.4&quot;/%3E %3Crect x=&quot;21&quot; y=&quot;24.4&quot; width=&quot;2.4&quot; height=&quot;2.4&quot; rx=&quot;.4&quot;/%3E %3Crect x=&quot;26.8&quot; y=&quot;24.4&quot; width=&quot;2.4&quot; height=&quot;2.4&quot; rx=&quot;.4&quot;/%3E %3Crect x=&quot;23.4&quot; y=&quot;26.8&quot; width=&quot;2.4&quot; height=&quot;2.4&quot; rx=&quot;.4&quot;/%3E %3C/g%3E %3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox=&quot;0 0 40 40&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;18&quot; fill=&quot;%23f8fafc&quot; stroke=&quot;%23e2e8f0&quot; stroke-width=&quot;1.5&quot;/%3E%3Crect x=&quot;10.5&quot; y=&quot;10.5&quot; width=&quot;7&quot; height=&quot;7&quot; rx=&quot;1.5&quot; stroke=&quot;%23047857&quot; stroke-width=&quot;2&quot;/%3E%3Crect x=&quot;13&quot; y=&quot;13&quot; width=&quot;2&quot; height=&quot;2&quot; fill=&quot;%23047857&quot;/%3E%3Crect x=&quot;22.5&quot; y=&quot;10.5&quot; width=&quot;7&quot; height=&quot;7&quot; rx=&quot;1.5&quot; stroke=&quot;%23047857&quot; stroke-width=&quot;2&quot;/%3E%3Crect x=&quot;25&quot; y=&quot;13&quot; width=&quot;2&quot; height=&quot;2&quot; fill=&quot;%23047857&quot;/%3E%3Crect x=&quot;10.5&quot; y=&quot;22.5&quot; width=&quot;7&quot; height=&quot;7&quot; rx=&quot;1.5&quot; stroke=&quot;%23047857&quot; stroke-width=&quot;2&quot;/%3E%3Crect x=&quot;13&quot; y=&quot;25&quot; width=&quot;2&quot; height=&quot;2&quot; fill=&quot;%23047857&quot;/%3E%3Cg fill=&quot;%2310b981&quot;%3E%3Crect x=&quot;22&quot; y=&quot;22&quot; width=&quot;3&quot; height=&quot;3&quot; rx=&quot;.6&quot;/%3E%3Crect x=&quot;27&quot; y=&quot;22&quot; width=&quot;3&quot; height=&quot;3&quot; rx=&quot;.6&quot;/%3E%3Crect x=&quot;24.5&quot; y=&quot;24.5&quot; width=&quot;3&quot; height=&quot;3&quot; rx=&quot;.6&quot;/%3E%3Crect x=&quot;22&quot; y=&quot;27&quot; width=&quot;3&quot; height=&quot;3&quot; rx=&quot;.6&quot;/%3E%3Crect x=&quot;27&quot; y=&quot;27&quot; width=&quot;3&quot; height=&quot;3&quot; rx=&quot;.6&quot;/%3E%3C/g%3E%3C/svg%3E">
 
   <style>
     :root{
@@ -246,7 +246,11 @@
         button.primary:hover:not(:disabled) { background:#065f46; border-color:#065f46; }
         button.primary svg { width:18px; height:18px; }
         .urlbar { padding:0.25rem 0.75rem; }
-        .urlbar input { min-height:40px; }
+        .urlbar input { min-height:44px; }
+        button, input { font-family:inherit; }
+        .preview { padding:1rem; min-height:240px; }
+        .preview .empty { font-size:0.9375rem; color:#94a3b8; text-align:center; }
+        #canvas[hidden] { display:none; }
         .urlbar input::placeholder { color:#64748b; }
         .urlbar input:focus-visible { outline:none !important; }
         .urlbar:focus-within { border-color:#047857; box-shadow:0 0 0 3px rgba(4,120,87,0.25); }
@@ -256,24 +260,12 @@
 <body>
 
 <header class="header oc-head">
-        <a href="https://onderconstructie.github.io/zakmes/" class="back-link" aria-label="Terug naar Zakmes">
+        <a href="../zakmes/" class="back-link" aria-label="Terug naar Zakmes">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             Zakmes
         </a>
         <div class="logo" aria-hidden="true">
-            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="20" cy="20" r="16" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
-        <g fill="#10b981">
-          <rect x="12" y="12" width="7" height="7" rx="1.4"/>
-          <rect x="21" y="12" width="7" height="7" rx="1.4"/>
-          <rect x="12" y="21" width="7" height="7" rx="1.4"/>
-          <rect x="21" y="21" width="2.4" height="2.4" rx=".4"/>
-          <rect x="24.4" y="21" width="2.4" height="2.4" rx=".4"/>
-          <rect x="21" y="24.4" width="2.4" height="2.4" rx=".4"/>
-          <rect x="26.8" y="24.4" width="2.4" height="2.4" rx=".4"/>
-          <rect x="23.4" y="26.8" width="2.4" height="2.4" rx=".4"/>
-        </g>
-      </svg>
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="18" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><rect x="10.5" y="10.5" width="7" height="7" rx="1.5" stroke="#047857" stroke-width="2"/><rect x="13" y="13" width="2" height="2" fill="#047857"/><rect x="22.5" y="10.5" width="7" height="7" rx="1.5" stroke="#047857" stroke-width="2"/><rect x="25" y="13" width="2" height="2" fill="#047857"/><rect x="10.5" y="22.5" width="7" height="7" rx="1.5" stroke="#047857" stroke-width="2"/><rect x="13" y="25" width="2" height="2" fill="#047857"/><g fill="#10b981"><rect x="22" y="22" width="3" height="3" rx=".6"/><rect x="27" y="22" width="3" height="3" rx=".6"/><rect x="24.5" y="24.5" width="3" height="3" rx=".6"/><rect x="22" y="27" width="3" height="3" rx=".6"/><rect x="27" y="27" width="3" height="3" rx=".6"/></g></svg>
         </div>
         <h1 class="title">QR Generator</h1>
         <p class="subtitle">Maak een QR-code van een link</p>
@@ -282,10 +274,10 @@
 <main>
   <div class="layout">
     <section class="card">
-      <label class="label" for="input">URL</label>
+      <label class="label" for="input">Link</label>
 
       <div class="urlbar">
-        <input id="input" type="text" placeholder="Plak of schrijf een URL…" spellcheck="false">
+        <input id="input" type="text" placeholder="Plak of schrijf een link…" spellcheck="false">
       </div>
 
       <div class="actions">
@@ -300,9 +292,10 @@
     </section>
 
     <aside class="card">
-      <div class="label">QR</div>
+      <div class="label">QR-code</div>
       <div class="preview">
-        <canvas id="canvas" width="320" height="320" role="img" aria-label="QR-code"></canvas>
+        <p class="empty" id="empty">Je QR-code verschijnt hier</p>
+        <canvas id="canvas" width="320" height="320" role="img" aria-label="QR-code" hidden></canvas>
       </div>
     </aside>
   </div>
@@ -319,11 +312,14 @@
   const ctx = canvas.getContext("2d",{alpha:false});
   const btnDownload = document.getElementById("download");
   const btnClear = document.getElementById("clear");
+  const empty = document.getElementById("empty");
+  let current = null;   /* {qr, value} van de getoonde code */
 
   const SIZE = 320;
-  const MARGIN = 2;
+  const MARGIN = 4;      /* rustzone: 4 modules, de norm */
+  const PRINT = 1024;    /* breedte van de printklare download */
   const EC = "M";
-  const FG = "#10b981";
+  const FG = "#047857";
   const BG = "#ffffff";
 
   function blank(){
@@ -333,6 +329,9 @@
     ctx.fillRect(0,0,SIZE,SIZE);
     btnDownload.disabled = true;
     btnClear.disabled = true;
+    canvas.hidden = true;
+    empty.hidden = false;
+    current = null;
   }
 
   function draw(value){
@@ -365,13 +364,69 @@
 
     btnDownload.disabled = false;
     btnClear.disabled = false;
+    canvas.hidden = false;
+    empty.hidden = true;
+    current = { qr, value };
+  }
+
+  /* Naam voor het bestand: de host van de link, anders de tekst zelf */
+  function slug(value){
+    let base = value;
+    try { base = new URL(/^[a-z][a-z0-9+.-]*:/i.test(value) ? value : "https://" + value).hostname || value; } catch(e) {}
+    base = base.replace(/^www\./, "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+               .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+    return base || "link";
+  }
+
+  function today(){
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+
+  /* Printklare versie: 1024 px breed, donkergroen, met de link klein eronder */
+  function printCanvas(){
+    const { qr, value } = current;
+    const m = qr.getModuleCount();
+    const total = m + MARGIN*2;
+    const scale = Math.floor(PRINT / total);
+    const side = scale * total;
+    const off = Math.floor((PRINT - side) / 2);
+    const fontPx = 28;
+    const textH = Math.round(fontPx * 3);
+    const c = document.createElement("canvas");
+    c.width = PRINT;
+    c.height = PRINT + textH;
+    const x = c.getContext("2d", { alpha:false });
+    x.fillStyle = BG;
+    x.fillRect(0, 0, c.width, c.height);
+    x.fillStyle = FG;
+    for(let r=0;r<m;r++){
+      for(let k=0;k<m;k++){
+        if(qr.isDark(r,k)) x.fillRect(off+(k+MARGIN)*scale, off+(r+MARGIN)*scale, scale, scale);
+      }
+    }
+    x.fillStyle = "#334155";
+    x.font = "500 " + fontPx + "px 'DM Sans', system-ui, sans-serif";
+    x.textAlign = "center";
+    x.textBaseline = "middle";
+    let label = value.replace(/^https?:\/\//i, "");
+    const maxW = PRINT - 2 * scale * MARGIN;
+    if (x.measureText(label).width > maxW) {
+      while (label.length > 1 && x.measureText(label + "…").width > maxW) label = label.slice(0, -1);
+      label += "…";
+    }
+    x.fillText(label, PRINT/2, PRINT + textH/2 - fontPx/2);
+    return c;
   }
 
   function download(){
+    if(!current) return;
     const a = document.createElement("a");
-    a.href = canvas.toDataURL("image/png");
-    a.download = "qr";
+    a.href = printCanvas().toDataURL("image/png");
+    a.download = "qr-" + slug(current.value) + "-" + today() + ".png";
+    document.body.appendChild(a);
     a.click();
+    a.remove();
   }
 
   input.addEventListener("input",()=>draw(input.value));
