@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#ffffff">
-  <title>QR Generator – Onder Constructie</title>
-    <meta name="description" content="Plak een URL, krijg direct een QR-code. Simpel en snel.">
+  <title>Scancode – Onder Constructie</title>
+    <meta name="description" content="Plak een link, krijg meteen een scancode. Simpel en snel.">
     <meta name="oc:groep" content="zakmes">
     <meta name="oc:labels" content="delen">
-    <meta name="oc:kort" content="Maak een QR-code van een link">
+    <meta name="oc:kort" content="Maak een scancode van een link">
     <meta name="oc:volgorde" content="110">
 <link rel="stylesheet" href="/fonts/fonts.css">
 
@@ -267,8 +267,8 @@
         <div class="logo" aria-hidden="true">
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="18" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><rect x="10.5" y="10.5" width="7" height="7" rx="1.5" stroke="#047857" stroke-width="2"/><rect x="13" y="13" width="2" height="2" fill="#047857"/><rect x="22.5" y="10.5" width="7" height="7" rx="1.5" stroke="#047857" stroke-width="2"/><rect x="25" y="13" width="2" height="2" fill="#047857"/><rect x="10.5" y="22.5" width="7" height="7" rx="1.5" stroke="#047857" stroke-width="2"/><rect x="13" y="25" width="2" height="2" fill="#047857"/><g fill="#10b981"><rect x="22" y="22" width="3" height="3" rx=".6"/><rect x="27" y="22" width="3" height="3" rx=".6"/><rect x="24.5" y="24.5" width="3" height="3" rx=".6"/><rect x="22" y="27" width="3" height="3" rx=".6"/><rect x="27" y="27" width="3" height="3" rx=".6"/></g></svg>
         </div>
-        <h1 class="title">QR Generator</h1>
-        <p class="subtitle">Maak een QR-code van een link</p>
+        <h1 class="title">Scancode</h1>
+        <p class="subtitle">Maak een scancode van een link</p>
     </header>
 
 <main>
@@ -282,7 +282,7 @@
 
       <div class="actions">
         <!-- Downloadknop met download-icoon + afbeelding-icoon -->
-        <button id="download" class="primary" type="button" disabled aria-label="Download de QR-code als afbeelding">
+        <button id="download" class="primary" type="button" disabled aria-label="Download de scancode als afbeelding">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
           Download
         </button>
@@ -292,10 +292,10 @@
     </section>
 
     <aside class="card">
-      <div class="label">QR-code</div>
+      <div class="label">Scancode</div>
       <div class="preview">
-        <p class="empty" id="empty">Je QR-code verschijnt hier</p>
-        <canvas id="canvas" width="320" height="320" role="img" aria-label="QR-code" hidden></canvas>
+        <p class="empty" id="empty">Je scancode verschijnt hier</p>
+        <canvas id="canvas" width="320" height="320" role="img" aria-label="Scancode" hidden></canvas>
       </div>
     </aside>
   </div>
@@ -303,7 +303,6 @@
 
 <footer class="footer oc-footer">
         <p class="quote oc-quote">Zie eerst wat er is. Pas daarna wat je denkt te zien.</p>
-        <p style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0;text-align:center">QR Code is een geregistreerd merk van DENSO WAVE INCORPORATED.</p>
     </footer>
 
 <script src="/lib/qrcode-generator-1.4.4.js"></script>
@@ -424,7 +423,7 @@
     if(!current) return;
     const a = document.createElement("a");
     a.href = printCanvas().toDataURL("image/png");
-    a.download = "qr-" + slug(current.value) + "-" + today() + ".png";
+    a.download = "scancode-" + slug(current.value) + "-" + today() + ".png";
     document.body.appendChild(a);
     a.click();
     a.remove();
