@@ -36,7 +36,7 @@
       font-family:'DM Sans', system-ui, -apple-system, sans-serif;
       background:var(--slate-50);
       color:var(--slate-700);
-      min-height:100vh;
+      min-height:100vh;min-height:100dvh;
     }
 
     header{
@@ -257,7 +257,14 @@
         .urlbar:has(input:focus-visible) { outline:2px solid #047857; outline-offset:2px; }
         @media (forced-colors: active) { .urlbar:focus-within { outline:3px solid Highlight; outline-offset:2px; } }
         #canvas { max-width:100%; height:auto; }
-    </style>
+    
+/* Soepel op gsm: geen tikvertraging, zichtbare tikfeedback, vensters scrollen de pagina niet mee */
+a, button, summary, select, label, [role="button"], [role="tab"] { touch-action: manipulation; }
+button:not(:disabled):active, summary:active, [role="button"]:active { filter: brightness(0.93); }
+dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscroll-behavior: contain; }
+html { -webkit-tap-highlight-color: transparent; }
+@media (pointer: coarse) { #input { font-size: 1rem; } }
+</style>
 </head>
 <body>
 
@@ -279,7 +286,7 @@
       <label class="label" for="input">Link</label>
 
       <div class="urlbar">
-        <input id="input" type="text" placeholder="Plak of schrijf een link…" spellcheck="false">
+        <input id="input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" enterkeyhint="done" placeholder="Plak of schrijf een link…" spellcheck="false">
       </div>
 
       <div class="actions">
@@ -431,7 +438,11 @@
     a.remove();
   }
 
-  input.addEventListener("input",()=>draw(input.value));
+  /* Tekenen hoogstens één keer per frame: plakken of snel typen blijft vlot */
+  let drawFrame = 0;
+  input.addEventListener("input",()=>{ cancelAnimationFrame(drawFrame); drawFrame = requestAnimationFrame(()=>draw(input.value)); });
+  /* Enter: toetsenbord dicht en de scancode in beeld (op een gsm staat ze onder het veld) */
+  input.addEventListener("keydown",e=>{ if(e.key!=="Enter") return; e.preventDefault(); cancelAnimationFrame(drawFrame); draw(input.value); input.blur(); if(!canvas.hidden) canvas.scrollIntoView({block:"nearest",behavior:"smooth"}); });
   btnDownload.addEventListener("click",download);
   btnClear.addEventListener("click",()=>{ input.value=""; blank(); input.focus(); });
 
