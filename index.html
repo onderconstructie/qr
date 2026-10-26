@@ -249,11 +249,13 @@
         .urlbar input { min-height:44px; }
         button, input { font-family:inherit; }
         .preview { padding:1rem; min-height:240px; }
-        .preview .empty { font-size:0.9375rem; color:#94a3b8; text-align:center; }
+        .preview .empty { font-size:0.9375rem; color:#64748b; text-align:center; }
         #canvas[hidden] { display:none; }
         .urlbar input::placeholder { color:#64748b; }
         .urlbar input:focus-visible { outline:none !important; }
         .urlbar:focus-within { border-color:#047857; box-shadow:0 0 0 3px rgba(4,120,87,0.25); }
+        .urlbar:has(input:focus-visible) { outline:2px solid #047857; outline-offset:2px; }
+        @media (forced-colors: active) { .urlbar:focus-within { outline:3px solid Highlight; outline-offset:2px; } }
         #canvas { max-width:100%; height:auto; }
     </style>
 </head>
