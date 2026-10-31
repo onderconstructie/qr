@@ -257,6 +257,9 @@
         .urlbar:has(input:focus-visible) { outline:2px solid #047857; outline-offset:2px; }
         @media (forced-colors: active) { .urlbar:focus-within { outline:3px solid Highlight; outline-offset:2px; } }
         #canvas { max-width:100%; height:auto; }
+        .preview .empty.fout { color:#b45309; max-width:22rem; }
+        .encoded { font-size:0.875rem; color:#475569; text-align:center; overflow-wrap:anywhere; }
+        .encoded b { font-weight:600; color:#047857; }
     
 /* Soepel op gsm: geen tikvertraging, zichtbare tikfeedback, vensters scrollen de pagina niet mee */
 a, button, summary, select, label, [role="button"], [role="tab"] { touch-action: manipulation; }
@@ -303,9 +306,10 @@ html { -webkit-tap-highlight-color: transparent; }
     <aside class="card">
       <div class="label">Scancode</div>
       <div class="preview">
-        <p class="empty" id="empty">Je scancode verschijnt hier</p>
+        <p class="empty" id="empty" role="status">Je scancode verschijnt hier</p>
         <canvas id="canvas" width="320" height="320" role="img" aria-label="Scancode" hidden></canvas>
       </div>
+      <p class="encoded" id="encoded" hidden></p>
     </aside>
   </div>
 </main>
@@ -328,6 +332,16 @@ html { -webkit-tap-highlight-color: transparent; }
   const MARGIN = 4;      /* rustzone: 4 modules, de norm */
   const PRINT = 1024;    /* breedte van de printklare download */
   const EC = "M";
+  /* Tekst als UTF-8 coderen: zo lezen gsm's ook é, ë en emoji correct (standaard neemt de bibliotheek 1 byte per teken) */
+  if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
+  const encoded = document.getElementById("encoded");
+  const EMPTY_TEXT = "Je scancode verschijnt hier";
+  /* Een webadres zonder https:// ("asgaupaust.be/agenda") wordt een echte link, anders opent een camera-app het als gewone tekst */
+  const DOMEIN = /^(?:www\.)?[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}(?::\d{1,5})?(?:[\/?#]\S*)?$/i;
+  function toCode(v){
+    if (/^[a-z][a-z0-9+.-]*:/i.test(v) || /\s|@/.test(v)) return v;
+    return DOMEIN.test(v) ? "https://" + v : v;
+  }
   const FG = "#047857";
   const BG = "#ffffff";
 
@@ -341,15 +355,28 @@ html { -webkit-tap-highlight-color: transparent; }
     canvas.hidden = true;
     empty.hidden = false;
     current = null;
+    encoded.hidden = true;
+    empty.textContent = EMPTY_TEXT;
+    empty.classList.remove("fout");
   }
 
   function draw(value){
     value = value.trim();
     if(!value){ blank(); return; }
 
-    const qr = qrcode(0,EC);
-    qr.addData(value);
-    qr.make();
+    const code = toCode(value);
+    let qr;
+    try {
+      qr = qrcode(0,EC);
+      qr.addData(code);
+      qr.make();
+    } catch(e) {
+      /* Te veel tekst voor één scancode: geen oude code laten staan */
+      blank();
+      empty.textContent = "Deze tekst is te lang voor een scancode. Maak hem korter, of gebruik een kortere link.";
+      empty.classList.add("fout");
+      return;
+    }
 
     const m = qr.getModuleCount();
     const total = m + MARGIN*2;
@@ -375,7 +402,9 @@ html { -webkit-tap-highlight-color: transparent; }
     btnClear.disabled = false;
     canvas.hidden = false;
     empty.hidden = true;
-    current = { qr, value };
+    current = { qr, value: code };
+    encoded.hidden = code === value;
+    if (code !== value) { encoded.innerHTML = "Wordt een link: <b></b>"; encoded.querySelector("b").textContent = code; }
   }
 
   /* Naam voor het bestand: de host van de link, anders de tekst zelf */
