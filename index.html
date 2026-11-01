@@ -290,6 +290,21 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
   header.header .back-link, .oc-head .back-link { position:static; display:flex; justify-content:center; margin:0 auto 0.75rem; width:max-content; }
   header.header .back-link span, .oc-head .back-link span { display:inline; }
 }
+
+/* Titel boven de code (niet verplicht) en Download als PDF (november 2026) */
+.field { display:flex; flex-direction:column; gap:0.5rem; }
+.label .opt { text-transform:none; letter-spacing:0; font-weight:400; }
+.help { font-size:0.8125rem; color:#64748b; line-height:1.4; }
+.preview { flex-direction:column; gap:0.75rem; }
+.cap { font-size:1.125rem; font-weight:700; color:#1e293b; letter-spacing:-0.01em; line-height:1.3; text-align:center; overflow-wrap:anywhere; text-wrap:balance; max-width:100%; }
+.actions { flex-wrap:wrap; gap:0.5rem; }
+.actions button svg { width:18px; height:18px; flex:none; }
+.actions button:not(.primary):hover:not(:disabled) { border-color:#a7f3d0; background:#ecfdf5; }
+.toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 1.25rem); transform:translate(-50%, calc(100% + 3rem)); visibility:hidden; z-index:50;
+  background:#1e293b; color:#fff; border-radius:12px; padding:0.625rem 1rem; display:flex; align-items:center; gap:0.75rem; font-size:0.9375rem; min-height:44px;
+  box-shadow:0 10px 30px rgba(15,23,42,0.25); transition:transform 0.25s ease, visibility 0s 0.25s; max-width:calc(100% - 2rem); }
+.toast.show { transform:translate(-50%, 0); visibility:visible; transition:transform 0.25s ease; }
+@media (prefers-reduced-motion: reduce) { .toast, .toast.show { transition:none; } }
 </style>
 </head>
 <body>
@@ -309,26 +324,39 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 <main>
   <div class="layout">
     <section class="card">
-      <label class="label" for="input">Link</label>
-
-      <div class="urlbar">
-        <input id="input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" enterkeyhint="done" placeholder="Plak of schrijf een link…" spellcheck="false">
+      <div class="field">
+        <label class="label" for="input">Link</label>
+        <div class="urlbar">
+          <input id="input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" enterkeyhint="done" placeholder="Plak of schrijf een link…" spellcheck="false">
+        </div>
       </div>
 
+      <div class="field">
+        <label class="label" for="titel">Titel <span class="opt">(niet verplicht)</span></label>
+        <div class="urlbar">
+          <input id="titel" type="text" maxlength="80" autocomplete="off" enterkeyhint="done" placeholder="Bv. Scan en lees mee" aria-describedby="titel-help">
+        </div>
+        <p class="help" id="titel-help">Komt boven de code, op de afbeelding en de PDF.</p>
+      </div>
     </section>
 
     <aside class="card">
       <div class="label">Scancode</div>
       <div class="preview">
         <p class="empty" id="empty" role="status">Je scancode verschijnt hier</p>
+        <p class="cap" id="cap" hidden></p>
         <canvas id="canvas" width="320" height="320" role="img" aria-label="Scancode" hidden></canvas>
       </div>
       <p class="encoded" id="encoded" hidden></p>
       <div class="actions">
-        <!-- Downloadknop met download-icoon + afbeelding-icoon -->
-        <button id="download" class="primary" type="button" disabled aria-label="Download de scancode als afbeelding">
+        <!-- Eerst de afbeelding (om te delen), daarna de PDF (om af te drukken) -->
+        <button id="download" class="primary" type="button" disabled aria-label="Download als afbeelding">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
-          Download
+          Afbeelding
+        </button>
+        <button id="pdf" type="button" disabled aria-label="Download als PDF, om af te drukken">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h4"/></svg>
+          PDF
         </button>
 
         <button id="clear" type="button" disabled>Wis</button>
@@ -341,6 +369,8 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
         <p class="quote oc-quote">Zie eerst wat er is. Pas daarna wat je denkt te zien.</p>
     </footer>
 
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-text"></span></div>
+
 <script src="/lib/qrcode-generator-1.4.4.js"></script>
 <script>
   const input = document.getElementById("input");
@@ -348,7 +378,12 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
   const ctx = canvas.getContext("2d",{alpha:false});
   const btnDownload = document.getElementById("download");
   const btnClear = document.getElementById("clear");
+  const btnPdf = document.getElementById("pdf");
+  const titel = document.getElementById("titel");
+  const cap = document.getElementById("cap");
   const empty = document.getElementById("empty");
+  const titelTekst = () => titel.value.replace(/\s+/g, " ").trim();
+  function toonTitel(){ const t = titelTekst(); cap.textContent = t; cap.hidden = !t || !current; }
   let current = null;   /* {qr, value} van de getoonde code */
 
   const SIZE = 320;
@@ -374,10 +409,12 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     ctx.fillStyle = BG;
     ctx.fillRect(0,0,SIZE,SIZE);
     btnDownload.disabled = true;
+    btnPdf.disabled = true;
     btnClear.disabled = true;
     canvas.hidden = true;
     empty.hidden = false;
     current = null;
+    toonTitel();
     encoded.hidden = true;
     empty.textContent = EMPTY_TEXT;
     empty.classList.remove("fout");
@@ -422,10 +459,12 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     }
 
     btnDownload.disabled = false;
+    btnPdf.disabled = false;
     btnClear.disabled = false;
     canvas.hidden = false;
     empty.hidden = true;
     current = { qr, value: code };
+    toonTitel();
     encoded.hidden = code === value;
     if (code !== value) { encoded.innerHTML = "Wordt een link: <b></b>"; encoded.querySelector("b").textContent = code; }
   }
@@ -444,7 +483,43 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
   }
 
-  /* Printklare versie: 1024 px breed, donkergroen, met de link klein eronder */
+  /* Tekst over regels verdelen. Een woord dat niet past (een lange link) breekt per teken. */
+  function regels(x, tekst, maxW){
+    const uit = [];
+    let lijn = "";
+    for (const woord of tekst.split(/\s+/).filter(Boolean)) {
+      const probeer = lijn ? lijn + " " + woord : woord;
+      if (x.measureText(probeer).width <= maxW) { lijn = probeer; continue; }
+      if (lijn) uit.push(lijn);
+      lijn = "";
+      for (const teken of woord) {
+        if (lijn && x.measureText(lijn + teken).width > maxW) { uit.push(lijn); lijn = ""; }
+        lijn += teken;
+      }
+    }
+    if (lijn) uit.push(lijn);
+    return uit;
+  }
+  /* Even lange regels (zoals text-wrap:balance) en hoogstens max regels, anders afgekapt met … */
+  function zetRegels(x, tekst, maxW, max, gelijk){
+    let r = regels(x, tekst, maxW);
+    if (gelijk && r.length > 1 && r.length <= max) {
+      for (let w = maxW * 0.97; w > maxW * 0.4; w -= maxW * 0.03) { const t = regels(x, tekst, w); if (t.length > r.length) break; r = t; }
+    }
+    if (r.length > max) {
+      r = r.slice(0, max);
+      let l = r[max - 1];
+      while (l.length > 1 && x.measureText(l + "…").width > maxW) l = l.slice(0, -1);
+      r[max - 1] = l.replace(/\s+$/, "") + "…";
+    }
+    return r;
+  }
+  const FONT = "'DM Sans', system-ui, sans-serif";
+  async function lettersKlaar(){
+    try { await Promise.all(["500", "700"].map(w => document.fonts.load(w + " 32px 'DM Sans'"))); } catch(e) {}
+  }
+
+  /* Printklare versie: 1024 px breed, donkergroen, met de titel erboven en de link klein eronder */
   function printCanvas(){
     const { qr, value } = current;
     const m = qr.getModuleCount();
@@ -455,11 +530,24 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     const fontPx = 28;
     const textH = Math.round(fontPx * 2.4);
     const c = document.createElement("canvas");
+    const t = titelTekst();
+    const titelPx = 52, titelLijn = Math.round(titelPx * 1.22);
+    let titelRegels = [];
+    if (t) { const m2 = c.getContext("2d"); m2.font = "700 " + titelPx + "px " + FONT; titelRegels = zetRegels(m2, t, PRINT - 2 * scale * MARGIN, 2, true); }
+    const top = titelRegels.length ? 56 + titelRegels.length * titelLijn : 0;
     c.width = PRINT;
-    c.height = PRINT + textH;
+    c.height = top + PRINT + textH;
     const x = c.getContext("2d", { alpha:false });
     x.fillStyle = BG;
     x.fillRect(0, 0, c.width, c.height);
+    if (titelRegels.length) {
+      x.fillStyle = "#1e293b";
+      x.font = "700 " + titelPx + "px " + FONT;
+      x.textAlign = "center";
+      x.textBaseline = "middle";
+      titelRegels.forEach((l, i) => x.fillText(l, PRINT/2, 56 + i * titelLijn + titelLijn / 2));
+      x.translate(0, top);
+    }
     x.fillStyle = FG;
     for(let r=0;r<m;r++){
       for(let k=0;k<m;k++){
@@ -480,14 +568,103 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     return c;
   }
 
-  function download(){
-    if(!current) return;
+  function bewaarBestand(blob, naam){
     const a = document.createElement("a");
-    a.href = printCanvas().toDataURL("image/png");
-    a.download = "scancode-" + slug(current.value) + "-" + today() + ".png";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    a.href = URL.createObjectURL(blob); a.download = naam;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
+  async function download(){
+    if(!current) return;
+    await lettersKlaar();
+    const naam = "scancode-" + slug(current.value) + "-" + today() + ".png";
+    printCanvas().toBlob(b => { if (!b) { toast("Downloaden lukt nu niet"); return; } bewaarBestand(b, naam); toast("Afbeelding gedownload"); }, "image/png");
+  }
+
+  /* ---------- Download als PDF: een rustig A4 om af te drukken, als affiche of tafelkaartje ----------
+     jsPDF komt van hetzelfde adres als bij ocExport in de andere tools (/lib/), zodat de app het
+     offline kan bewaren. Het wordt pas geladen bij de eerste PDF. De code zelf is vector: scherp op elk formaat. */
+  const ocPdf = (() => {
+    const LIB = "/lib/jspdf-2.5.1.umd.min.js";
+    let laden = null;
+    function load(){
+      if (window.jspdf) return Promise.resolve();
+      if (!laden) laden = new Promise((ok, fail) => {
+        const s = document.createElement("script");
+        s.src = LIB; s.onload = ok;
+        s.onerror = () => { laden = null; s.remove(); fail(new Error("laden mislukt")); };
+        document.head.appendChild(s);
+      });
+      return laden;
+    }
+    return { load };
+  })();
+
+  const PX = 12;                 /* pixels per mm voor de tekst in de PDF (ongeveer 300 dpi) */
+  const PT = 0.3528;             /* 1 punt in mm */
+  /* Een tekstblok als scherpe afbeelding, gecentreerd, in DM Sans */
+  function tekstBlok({ tekst, gewicht, pt, kleur, breedte, max, lijn, gelijk }){
+    const c = document.createElement("canvas");
+    const x = c.getContext("2d");
+    const px = pt * PT * PX, maxW = breedte * PX;
+    const font = gewicht + " " + px + "px " + FONT;
+    x.font = font;
+    const r = zetRegels(x, tekst, maxW, max, gelijk);
+    const lh = px * lijn;
+    c.width = Math.ceil(maxW);
+    c.height = Math.ceil(r.length * lh + px * 0.3);
+    x.font = font;   /* doorzichtige achtergrond: zuiver wit op papier */ x.fillStyle = kleur; x.textAlign = "center"; x.textBaseline = "middle";
+    r.forEach((l, i) => x.fillText(l, c.width / 2, px * 0.15 + i * lh + lh / 2));
+    return { url: c.toDataURL("image/png"), w: breedte, h: c.height / PX, regels: r.length };
+  }
+
+  async function downloadPdf(){
+    if(!current) return;
+    const nu = current;
+    toast("Bezig…");
+    try { await ocPdf.load(); }
+    catch(e) { toast("Downloaden lukt nu niet: geen verbinding?"); return; }
+    await lettersKlaar();
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"a4", compress:true });
+      const W = 210, H = 297, Q = 120;      /* A4, de code zelf 12 cm breed */
+      const t = titelTekst();
+      let kop = null;
+      if (t) {
+        kop = tekstBlok({ tekst:t, gewicht:700, pt:30, kleur:"#1e293b", breedte:160, max:2, lijn:1.2, gelijk:true });
+        if (kop.regels > 1) kop = tekstBlok({ tekst:t, gewicht:700, pt:26, kleur:"#1e293b", breedte:160, max:2, lijn:1.2, gelijk:true });
+      }
+      const link = tekstBlok({ tekst:nu.value.replace(/^https?:\/\//i, "").replace(/\/$/, ""), gewicht:500, pt:11, kleur:"#475569", breedte:150, max:3, lijn:1.35 });
+      const gapKop = 16, gapLink = 10;
+      const hoog = (kop ? kop.h + gapKop : 0) + Q + gapLink + link.h;
+      let y = Math.max(28, (H - hoog) / 2 - 8);   /* iets boven het midden: dat oogt rustiger */
+      if (kop) { doc.addImage(kop.url, "PNG", (W - kop.w) / 2, y, kop.w, kop.h); y += kop.h + gapKop; }
+      /* Code als vlakjes: per rij aaneengesloten stukken, met een haarfijne overlap tegen witte naadjes */
+      const m = nu.qr.getModuleCount(), mod = Q / m, x0 = (W - Q) / 2, y0 = y;
+      doc.setFillColor(4, 120, 87);
+      for (let r = 0; r < m; r++) {
+        for (let k = 0; k < m; k++) {
+          if (!nu.qr.isDark(r, k)) continue;
+          let e = k; while (e + 1 < m && nu.qr.isDark(r, e + 1)) e++;
+          doc.rect(x0 + k * mod, y0 + r * mod, (e - k + 1) * mod, mod + 0.03, "F");
+          k = e;
+        }
+      }
+      y += Q + gapLink;
+      doc.addImage(link.url, "PNG", (W - link.w) / 2, y, link.w, link.h);
+      doc.setProperties({ title: t || "Scancode", subject: nu.value, creator: "Onder Constructie" });
+      bewaarBestand(doc.output("blob"), "scancode-" + slug(nu.value) + "-" + today() + ".pdf");
+      toast("PDF gedownload");
+    } catch(e) { toast("Downloaden lukt nu niet"); }
+  }
+
+  let toastT = null;
+  function toast(msg){
+    document.getElementById("toast-text").textContent = msg;
+    document.getElementById("toast").classList.add("show");
+    clearTimeout(toastT); toastT = setTimeout(() => document.getElementById("toast").classList.remove("show"), 2600);
   }
 
   /* Tekenen hoogstens één keer per frame: plakken of snel typen blijft vlot */
@@ -496,7 +673,21 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
   /* Enter: toetsenbord dicht en de scancode in beeld (op een gsm staat ze onder het veld) */
   input.addEventListener("keydown",e=>{ if(e.key!=="Enter") return; e.preventDefault(); cancelAnimationFrame(drawFrame); draw(input.value); input.blur(); if(!canvas.hidden) canvas.scrollIntoView({block:"nearest",behavior:"smooth"}); });
   btnDownload.addEventListener("click",download);
-  btnClear.addEventListener("click",()=>{ input.value=""; blank(); input.focus(); });
+  btnPdf.addEventListener("click",downloadPdf);
+  btnClear.addEventListener("click",()=>{ input.value=""; titel.value=""; blank(); input.focus(); });
+  titel.addEventListener("input", toonTitel);
+  titel.addEventListener("keydown", e => { if (e.key !== "Enter") return; e.preventDefault(); titel.blur(); });
+  /* Soepel: jsPDF alvast ophalen zodra iemand naar de PDF-knop gaat (niet bij het laden) */
+  (() => {
+    let warm = false;
+    const go = () => {
+      warm = true;
+      const h = "/lib/jspdf-2.5.1.umd.min.js", l = document.createElement("link");
+      if (l.relList && l.relList.supports && l.relList.supports("prefetch")) { l.rel = "prefetch"; l.as = "script"; l.href = h; document.head.appendChild(l); }
+      else try { fetch(h).catch(() => {}); } catch (e) {}
+    };
+    ["pointerdown", "focusin", "mouseover"].forEach(t => btnPdf.addEventListener(t, () => { if (!warm) go(); }, { passive:true }));
+  })();
 
   blank();
 </script>
