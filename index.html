@@ -112,7 +112,7 @@
     }
 
     .label{
-      font-size:0.6875rem;
+      font-size:0.75rem;
       letter-spacing:.12em;
       text-transform:uppercase;
       color:var(--slate-400);
@@ -260,6 +260,11 @@
         .preview .empty.fout { color:#b45309; max-width:22rem; }
         .encoded { font-size:0.875rem; color:#475569; text-align:center; overflow-wrap:anywhere; }
         .encoded b { font-weight:600; color:#047857; }
+        /* Downloaden staat onder de code: eerst zien, dan bewaren (op gsm staat de code onder het invulveld) */
+        .layout { align-items:start; }
+        aside .actions { justify-content:center; }
+        .label { font-size:0.75rem; }
+        .urlbar { border-radius:12px; }
     
 /* Soepel op gsm: geen tikvertraging, zichtbare tikfeedback, vensters scrollen de pagina niet mee */
 a, button, summary, select, label, [role="button"], [role="tab"] { touch-action: manipulation; }
@@ -267,6 +272,10 @@ button:not(:disabled):active, summary:active, [role="button"]:active { filter: b
 dialog, [role="dialog"], [role="alertdialog"], .modal, .modal-backdrop { overscroll-behavior: contain; }
 html { -webkit-tap-highlight-color: transparent; }
 @media (pointer: coarse) { #input { font-size: 1rem; } }
+
+/* Voet altijd onderaan, ook op een hoog scherm (tablet): zoals in de andere tools */
+body { display:flex; flex-direction:column; }
+body > main { flex:1 0 auto; width:100%; }
 </style>
 </head>
 <body>
@@ -292,15 +301,6 @@ html { -webkit-tap-highlight-color: transparent; }
         <input id="input" type="text" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" enterkeyhint="done" placeholder="Plak of schrijf een link…" spellcheck="false">
       </div>
 
-      <div class="actions">
-        <!-- Downloadknop met download-icoon + afbeelding-icoon -->
-        <button id="download" class="primary" type="button" disabled aria-label="Download de scancode als afbeelding">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
-          Download
-        </button>
-
-        <button id="clear" type="button" disabled>Wis</button>
-      </div>
     </section>
 
     <aside class="card">
@@ -310,6 +310,15 @@ html { -webkit-tap-highlight-color: transparent; }
         <canvas id="canvas" width="320" height="320" role="img" aria-label="Scancode" hidden></canvas>
       </div>
       <p class="encoded" id="encoded" hidden></p>
+      <div class="actions">
+        <!-- Downloadknop met download-icoon + afbeelding-icoon -->
+        <button id="download" class="primary" type="button" disabled aria-label="Download de scancode als afbeelding">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download
+        </button>
+
+        <button id="clear" type="button" disabled>Wis</button>
+      </div>
     </aside>
   </div>
 </main>
