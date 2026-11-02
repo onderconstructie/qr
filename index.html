@@ -403,6 +403,8 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
   function toCode(v){
     /* Een e-mailadres wordt een maillink: de gsm opent dan meteen een nieuwe mail */
     if (MAIL.test(v)) return "mailto:" + v;
+    /* Een link met spaties: spaties worden %20, anders breekt de link bij het scannen */
+    if (/^https?:\/\/\S+(\s+\S+)+$/i.test(v)) return v.replace(/\s+/g, "%20");
     if (/^[a-z][a-z0-9+.-]*:/i.test(v) || /\s|@/.test(v)) return v;
     return DOMEIN.test(v) ? "https://" + v : v;
   }
@@ -472,8 +474,14 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     empty.hidden = true;
     current = { qr, value: code };
     toonTitel();
-    encoded.hidden = code === value;
-    if (code !== value) { encoded.innerHTML = (code.startsWith("mailto:") ? "Wordt een maillink: " : "Wordt een link: ") + "<b></b>"; encoded.querySelector("b").textContent = code; }
+    /* Geen link? Zeg dat: anders druk je een code af die enkel tekst toont */
+    const isLink = /^[a-z][a-z0-9+.-]*:/i.test(code);
+    encoded.hidden = code === value && isLink;
+    if (!isLink) encoded.textContent = "Geen link: wie scant, ziet gewoon deze tekst. Bedoel je een website? Kijk de schrijfwijze na.";
+    else if (code !== value) { encoded.innerHTML = (code.startsWith("mailto:") ? "Wordt een maillink: " : "Wordt een link: ") + "<b></b>"; encoded.querySelector("b").textContent = code; }
+    /* Een lange link geeft een fijne code: dan groter afdrukken (ongeveer een halve millimeter per blokje) */
+    const cm = Math.max(3, Math.ceil((m + MARGIN * 2) * 0.05));
+    tip.textContent = "Scan de code eerst zelf met je gsm. Druk hem niet kleiner af dan " + cm + " cm." + (cm > 3 ? " Een kortere link geeft een eenvoudigere code." : "");
     tip.hidden = false;
   }
 
