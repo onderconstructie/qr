@@ -295,6 +295,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 .field { display:flex; flex-direction:column; gap:0.5rem; }
 .label .opt { text-transform:none; letter-spacing:0; font-weight:400; }
 .help { font-size:0.8125rem; color:#64748b; line-height:1.4; }
+.help.tip { text-align:center; margin-top:0.75rem; }
 .preview { flex-direction:column; gap:0.75rem; }
 .cap { font-size:1.125rem; font-weight:700; color:#1e293b; letter-spacing:-0.01em; line-height:1.3; text-align:center; overflow-wrap:anywhere; text-wrap:balance; max-width:100%; }
 .actions { flex-wrap:wrap; gap:0.5rem; }
@@ -361,6 +362,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
 
         <button id="clear" type="button" disabled>Wis</button>
       </div>
+      <p class="help tip" id="tip" hidden>Scan de code eerst zelf met je gsm. Druk hem niet kleiner af dan 3 cm.</p>
     </aside>
   </div>
 </main>
@@ -393,10 +395,14 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
   /* Tekst als UTF-8 coderen: zo lezen gsm's ook é, ë en emoji correct (standaard neemt de bibliotheek 1 byte per teken) */
   if (qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs["UTF-8"]) qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
   const encoded = document.getElementById("encoded");
+  const tip = document.getElementById("tip");
   const EMPTY_TEXT = "Je scancode verschijnt hier";
   /* Een webadres zonder https:// ("asgaupaust.be/agenda") wordt een echte link, anders opent een camera-app het als gewone tekst */
   const DOMEIN = /^(?:www\.)?[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}(?::\d{1,5})?(?:[\/?#]\S*)?$/i;
+  const MAIL = /^[^\s@:\/]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}$/i;
   function toCode(v){
+    /* Een e-mailadres wordt een maillink: de gsm opent dan meteen een nieuwe mail */
+    if (MAIL.test(v)) return "mailto:" + v;
     if (/^[a-z][a-z0-9+.-]*:/i.test(v) || /\s|@/.test(v)) return v;
     return DOMEIN.test(v) ? "https://" + v : v;
   }
@@ -416,6 +422,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     current = null;
     toonTitel();
     encoded.hidden = true;
+    tip.hidden = true;
     empty.textContent = EMPTY_TEXT;
     empty.classList.remove("fout");
   }
@@ -466,13 +473,16 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     current = { qr, value: code };
     toonTitel();
     encoded.hidden = code === value;
-    if (code !== value) { encoded.innerHTML = "Wordt een link: <b></b>"; encoded.querySelector("b").textContent = code; }
+    if (code !== value) { encoded.innerHTML = (code.startsWith("mailto:") ? "Wordt een maillink: " : "Wordt een link: ") + "<b></b>"; encoded.querySelector("b").textContent = code; }
+    tip.hidden = false;
   }
 
   /* Naam voor het bestand: de host van de link, anders de tekst zelf */
   function slug(value){
-    let base = value;
-    try { base = new URL(/^[a-z][a-z0-9+.-]*:/i.test(value) ? value : "https://" + value).hostname || value; } catch(e) {}
+    /* Bij een maillink: het domein achter de @ */
+    const v = value.replace(/^mailto:[^@]*@/i, "");
+    let base = v;
+    try { base = new URL(/^[a-z][a-z0-9+.-]*:/i.test(v) ? v : "https://" + v).hostname || v; } catch(e) {}
     base = base.replace(/^www\./, "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
     return base || "link";
@@ -558,7 +568,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
     x.font = "500 " + fontPx + "px 'DM Sans', system-ui, sans-serif";
     x.textAlign = "center";
     x.textBaseline = "middle";
-    let label = value.replace(/^https?:\/\//i, "");
+    let label = value.replace(/^(?:https?:\/\/|mailto:)/i, "");
     const maxW = PRINT - 2 * scale * MARGIN;
     if (x.measureText(label).width > maxW) {
       while (label.length > 1 && x.measureText(label + "…").width > maxW) label = label.slice(0, -1);
@@ -636,7 +646,7 @@ header.header h1 + p, header.header h1 + p.subtitle, .oc-head h1 + p, .oc-head h
         kop = tekstBlok({ tekst:t, gewicht:700, pt:30, kleur:"#1e293b", breedte:160, max:2, lijn:1.2, gelijk:true });
         if (kop.regels > 1) kop = tekstBlok({ tekst:t, gewicht:700, pt:26, kleur:"#1e293b", breedte:160, max:2, lijn:1.2, gelijk:true });
       }
-      const link = tekstBlok({ tekst:nu.value.replace(/^https?:\/\//i, "").replace(/\/$/, ""), gewicht:500, pt:11, kleur:"#475569", breedte:150, max:3, lijn:1.35 });
+      const link = tekstBlok({ tekst:nu.value.replace(/^(?:https?:\/\/|mailto:)/i, "").replace(/\/$/, ""), gewicht:500, pt:11, kleur:"#475569", breedte:150, max:3, lijn:1.35 });
       const gapKop = 16, gapLink = 10;
       const hoog = (kop ? kop.h + gapKop : 0) + Q + gapLink + link.h;
       let y = Math.max(28, (H - hoog) / 2 - 8);   /* iets boven het midden: dat oogt rustiger */
