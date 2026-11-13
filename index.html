@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<!-- oc-delen -->
+<link rel="canonical" href="https://onderconstructie.app/qr/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Onder Constructie">
+<meta property="og:locale" content="nl_BE">
+<meta property="og:title" content="Scancode · Onder Constructie">
+<meta property="og:description" content="Plak een link, krijg meteen een scancode. Simpel en snel.">
+<meta property="og:url" content="https://onderconstructie.app/qr/">
+<meta property="og:image" content="https://onderconstructie.app/og/qr.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Scancode. Maak een scancode van een link">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /oc-delen -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#ffffff">
   <title>Scancode – Onder Constructie</title>
@@ -113,7 +127,7 @@
     }
 
     .label{
-      font-size:0.75rem;
+      font-size:0.8125rem;
       letter-spacing:.12em;
       text-transform:uppercase;
       color:var(--slate-400);
@@ -264,7 +278,7 @@
         /* Downloaden staat onder de code: eerst zien, dan bewaren (op gsm staat de code onder het invulveld) */
         .layout { align-items:start; }
         aside .actions { justify-content:center; }
-        .label { font-size:0.75rem; }
+        .label { font-size:0.8125rem; }
         .urlbar { border-radius:12px; }
     
 /* Soepel op gsm: geen tikvertraging, zichtbare tikfeedback, vensters scrollen de pagina niet mee */
@@ -671,7 +685,7 @@ details.explain.oc-u[open] .oc-u-pijl { transform:rotate(180deg); background:var
 
 /* op brede schermen: de stappen als kleine route, die plaats maakt voor de echte stappen bij openen */
 details.explain.oc-u .oc-u-route { display:none; align-items:center; flex-shrink:0; margin-right:0.75rem; transition:opacity 0.25s, visibility 0.25s; }
-details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.75rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
+details.explain.oc-u .oc-u-route i { position:relative; display:flex; align-items:center; justify-content:center; width:26px; height:26px; margin-left:16px; border-radius:50%; border:1.5px solid var(--u-licht); background:#ffffff; color:var(--u-donker); font-style:normal; font-size:0.8125rem; font-weight:700; line-height:1; font-variant-numeric:tabular-nums; transition:border-color 0.2s, background-color 0.2s; }
 details.explain.oc-u .oc-u-route i:first-child { margin-left:0; }
 details.explain.oc-u .oc-u-route i + i::before { content:''; position:absolute; right:calc(100% + 1.5px); top:calc(50% - 0.75px); width:16px; height:1.5px; background:var(--u-licht); }
 details.explain.oc-u > summary:hover .oc-u-route i { border-color:var(--u-groen); }
@@ -1263,7 +1277,7 @@ main > details.explain { display:block; width:100%; max-width:40rem; margin:2rem
      jsPDF komt van hetzelfde adres als bij ocExport in de andere tools (/lib/), zodat de app het
      offline kan bewaren. Het wordt pas geladen bij de eerste PDF. De code zelf is vector: scherp op elk formaat. */
   const ocPdf = (() => {
-    const LIB = "/lib/jspdf-2.5.1.umd.min.js";
+    const LIB = "/lib/jspdf-4.2.1.umd.min.js";
     let laden = null;
     function load(){
       if (window.jspdf) return Promise.resolve();
@@ -1359,7 +1373,7 @@ main > details.explain { display:block; width:100%; max-width:40rem; margin:2rem
     let warm = false;
     const go = () => {
       warm = true;
-      const h = "/lib/jspdf-2.5.1.umd.min.js", l = document.createElement("link");
+      const h = "/lib/jspdf-4.2.1.umd.min.js", l = document.createElement("link");
       if (l.relList && l.relList.supports && l.relList.supports("prefetch")) { l.rel = "prefetch"; l.as = "script"; l.href = h; document.head.appendChild(l); }
       else try { fetch(h).catch(() => {}); } catch (e) {}
     };
