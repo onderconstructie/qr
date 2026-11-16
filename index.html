@@ -1384,6 +1384,19 @@ main > details.explain { display:block; width:100%; max-width:40rem; margin:2rem
   })();
 
   blank();
+  /* Uit een andere tool (Kladblok): 'oc.naar.qr' = { v:1, t, van, vanTitel, titel, tekst }. Alleen vers (10 minuten), één keer.
+     Regeleinden blijven in de code; het veld toont de tekst op één regel. */
+  (() => {
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem("oc.naar.qr")); localStorage.removeItem("oc.naar.qr"); } catch (e) {}
+    if (!d || typeof d !== "object" || typeof d.tekst !== "string" || !d.tekst.trim() || !Number.isFinite(d.t) || d.t > Date.now() + 6e4 || Date.now() - d.t > 6e5) return;
+    const tekst = d.tekst.replace(/\r\n?/g, "\n").trim();
+    input.value = tekst.replace(/\s*\n\s*/g, " ");
+    titel.value = String(d.titel || "").replace(/\s+/g, " ").trim().slice(0, 80);
+    draw(tekst); toonTitel();
+    try { const u = new URL(location.href); if (u.searchParams.has("van")) { u.searchParams.delete("van"); history.replaceState(null, "", u.pathname + u.search + u.hash); } } catch (e) {}
+    toast(canvas.hidden ? "Te lang voor een scancode" : "Overgenomen uit " + String(d.vanTitel || "een andere tool").slice(0, 60));
+  })();
 </script>
 
 <script>
